@@ -4,6 +4,35 @@
 #include "htslib/hts.h"
 #include <cstring>
 #include "boost/program_options.hpp"
+
+
+/*
+ * This function exists on MacOS, but not Linux, so we define here
+ * Find the first occurrence of find in s, where the search is limited to the
+ * first slen characters of s.
+ */
+char *
+strnstr(const char *s, const char *find, size_t slen)
+{
+	char c, sc;
+	size_t len;
+
+	if ((c = *find++) != '\0') {
+		len = strlen(find);
+		do {
+			do {
+				if (slen-- < 1 || (sc = *s++) == '\0')
+					return (NULL);
+			} while (sc != c);
+			if (len > slen)
+				return (NULL);
+		} while (strncmp(s, find, len) != 0);
+		s--;
+	}
+	return ((char *)s);
+}
+
+
 static const int WINDOW_SIZE = BGZF_BLOCK_SIZE;
 
 namespace po = boost::program_options;
@@ -120,7 +149,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    
     while(c_0 != 0 && !are_any_0(c_others, n_inputs - 1)) {
         int tab_counter = 0;
         int contig_pos_a1_a2_n;
@@ -210,7 +238,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        if (c_0 == 0 || are_any_0(c_others, n_inputs)) {
+        if (c_0 == 0 || are_any_0(c_others, n_inputs - 1)) {
             break;
         }
 

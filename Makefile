@@ -1,13 +1,20 @@
 CXX=g++
 
-CXXFLAG=-g -std=c++11 -mmacosx-version-min=14.0 -O3
+#CXXFLAG=-g -std=c++17 -O3
+CXXFLAG=-std=c++17 -O3
 
-LDFLAG=-L/opt/homebrew/lib -lhts -lboost_program_options
+LDFLAG=-lhts 
 
-#LDFLAG=/opt/homebrew/lib/libhts.a
+UNAME_S := $(shell uname -s)
 
-INCFLAG=-I/opt/homebrew/include/
-
+ifeq ($(UNAME_S),Darwin)
+	LDFLAG += -L/opt/homebrew/lib -lboost_program_options -mmacosx-version-min=14.0
+	INCFLAG = -I/opt/homebrew/include/
+endif
+ifeq ($(UNAME_S),Linux)
+	LDFLAG += -L/usr/local/lib -lboost_program_options
+	INCFLAG = -I/usr/local/include/htslib
+endif
 .PHONY: all clean
 
 all: dfvm
@@ -16,5 +23,5 @@ clean:
 	rm dfvm
 
 dfvm: dfvm.cpp
-	$(CXX) -v $(LDFLAG) $(CXXFLAG) $(INCFLAG) dfvm.cpp -o dfvm
+	$(CXX) dfvm.cpp $(LDFLAG) $(CXXFLAG) $(INCFLAG)  -o dfvm
 
