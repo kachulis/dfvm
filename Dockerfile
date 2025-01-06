@@ -28,14 +28,15 @@ rm htslib-1.21.tar.bz2 && \
 cd htslib-1.21 && \
 autoheader && \
 autoconf && \
-./configure --enable-libcurl && \
+./configure --enable-libcurl --with-libdeflate && \
 make install && \
 cd .. && \
 rm -r htslib-1.21
 
 
 RUN mkdir dfvm
-COPY dfvm.cpp dfvm
+COPY *.cpp dfvm
+COPY *.hh dfvm
 COPY Makefile dfvm
 
 RUN cd dfvm && \
@@ -43,6 +44,6 @@ make
 
 ENV LD_LIBRARY_PATH=/usr/local/lib
 
-RUN apt-get install -y gdb
+#RUN apt-get install -y gdb
 
 WORKDIR /
