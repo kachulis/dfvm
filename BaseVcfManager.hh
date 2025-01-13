@@ -49,5 +49,14 @@ class BaseVcfManager {
 
         parse_result continue_parsing_line();
 
-        bool finished() {return !more_to_read && line_start == processing_buffer_end;}
+        bool finished() {
+            if (line_start != processing_buffer_end) {
+                return false;
+            }
+
+            if (read_result.valid()) {
+                read_result.wait();
+            }
+            return !more_to_read;
+        }
 };
